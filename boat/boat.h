@@ -13,5 +13,6 @@
 #define BOAT_H
 
 #include "gps.h"
+#include "comms.h"
 
 #endif // BOAT_H
