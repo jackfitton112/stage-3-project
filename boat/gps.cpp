@@ -43,6 +43,24 @@ void gps_thread_worker(){
 
     while(1){
 
+        /*
+        Fix types:
+        0: No fix
+        1: Dead reckoning only
+        2: 2D-fix
+        3: 3D-fix
+        4: GNSS + dead reckoning combined
+        5: Time only fix
+        */
+        byte fixType = GPSCHIP.getFixType();
+        
+        //if fixtype is less than 2D, do not store the data
+        if(fixType < 2){
+            Serial.println("No fix / Low quality fix - Not updating GPS data");
+            continue;
+        }
+
+
         gpstimer.start();
         
         //get the data from the GPS chip
