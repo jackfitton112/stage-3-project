@@ -20,6 +20,7 @@ int setup_gps() {
   Serial.begin(115200);
   //Start the I2C port
   Wire.begin();
+  Wire.setClock(400000); //High speed wire needed for high data rate
   //Start the GPS chip
   GPSCHIP.begin();
   //Check if the GPS chip is connected
@@ -28,6 +29,7 @@ int setup_gps() {
     return 1;
   }
   //Configure the GPS chip and save the configuration
+  GPSCHIP.setNavigationFrequency(25);
   GPSCHIP.setI2COutput(COM_TYPE_UBX);
   GPSCHIP.saveConfigSelective(VAL_CFG_SUBSEC_IOPORT);
 
@@ -56,7 +58,7 @@ void gps_thread_worker(){
         
         //if fixtype is less than 2D, do not store the data
         if(fixType < 2){
-            Serial.println("No fix / Low quality fix - Not updating GPS data");
+            //Serial.println("No fix / Low quality fix - Not updating GPS data");
             continue;
         }
 
@@ -85,7 +87,7 @@ void gps_thread_worker(){
         //calculate the time taken to get the data
         float time = gpstimer.read();
 
-        float time_remaining = 0.5 - time;
+        float time_remaining = 0.04 - time;
 
         //wait for the remaining time
         rtos::ThisThread::sleep_for(time_remaining);

@@ -17,13 +17,14 @@ void setup() {
     Serial.begin(115200); //Open serial port
 
     //Setup GPS
+    
     if (setup_gps() != 0) {
         Serial.println(F("GPS setup failed"));
         while (1);
     }
 
     setupComms();
-
+    
 
 }
 

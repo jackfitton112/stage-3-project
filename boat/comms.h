@@ -15,11 +15,19 @@
 
 #include <ArduinoBLE.h>
 #include <mbed/mbed.h>
+#include <RF24.h>
 #include "gps.h"
+
+
+#define CE_PIN 7
+#define CSN_PIN 8
 
 
 void setupComms();
 void comms_thread_worker();
+void nrf_thread();
+void queue_worker();
+
 
 
 #endif // COMMS_H
