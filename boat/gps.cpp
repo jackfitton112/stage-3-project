@@ -11,34 +11,52 @@
 
 #include "gps.h"
 
+//Create a struct to hold the GPS data
 gps_data gpsData;
-rtos::Thread gps_thread;
-SFE_UBLOX_GNSS GPSCHIP; //Create instance of the SFE_UBLOX_GNSS class called GPSCHIP
 
+//Create a thread for the GPS
+rtos::Thread gps_thread;
+
+//Create instance of the SFE_UBLOX_GNSS class called GPSCHIP
+SFE_UBLOX_GNSS GPSCHIP; 
+
+/**
+ * @brief Set the up gps object
+ * 
+ * @return int (OK or GPS_INIT_FAIL)
+ */
 int setup_gps() {
 
   //Start the I2C port
   Wire.begin();
   Wire.setClock(400000); //High speed wire needed for high data rate
+
   //Start the GPS chip
   GPSCHIP.begin();
+
   //Check if the GPS chip is connected
   if (GPSCHIP.begin() == false) {
-    Serial.println("u-blox GNSS not detected at default I2C address. Please check wiring.");
-    return GPS_INIT_FAIL;
+  Serial.println("u-blox GNSS not detected at default I2C address. Please check wiring.");
+  return GPS_INIT_FAIL;
   }
+
   //Configure the GPS chip and save the configuration
   GPSCHIP.setNavigationFrequency(25);
   GPSCHIP.setI2COutput(COM_TYPE_UBX);
   GPSCHIP.saveConfigSelective(VAL_CFG_SUBSEC_IOPORT);
 
-    //Start the gps thread
-    gps_thread.start(&gps_thread_worker);
+  //Start the gps thread
+  gps_thread.start(&gps_thread_worker);
 
 
   return OK;
 }
 
+
+/**
+ * @brief GPS thread worker function
+ * 
+ */
 void gps_thread_worker(){
     mbed::Timer gpstimer;
 

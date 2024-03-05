@@ -50,10 +50,9 @@ extern uint8_t address[][6];
 
 
 
-int setup_comms();
-void comms_thread_worker();
-void nrf_thread();
+int setup_ble();
 int setup_radio();
+void ble_thread();
 void radio_thread();
 
 

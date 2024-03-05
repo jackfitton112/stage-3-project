@@ -13,7 +13,10 @@
 
 
 
-
+/**
+ * @brief Setup function for the boat
+ * 
+ */
 void setup() {
     Serial.begin(115200); // Open serial port
 
@@ -25,7 +28,7 @@ void setup() {
         while (1);
     }
 
-    if(setup_comms() != OK){
+    if(setup_ble() != OK){
         Serial.println(F("Comms setup failed"));
         while(1);
     }
@@ -36,11 +39,18 @@ void setup() {
     }
 
 
+    //Only prints if debug is enabled
+    #ifdef DEBUG
+    Serial.println(F("Setup complete"));
+    #endif
+
+
 }
 
 
 void loop() {
   
-
+  //stops the program from running too fast
+  rtos::ThisThread::sleep_for(1000);
 
 } 

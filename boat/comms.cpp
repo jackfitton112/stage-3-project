@@ -24,8 +24,8 @@ BLEIntCharacteristic boatGPSHead("19B10004-E8F2-537E-4F6C-D104768A1214", BLERead
 BLEFloatCharacteristic boatGPSSpeed("19B10005-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
 
 
-rtos::Thread ble_thread;
-rtos::Thread comms_thread;
+rtos::Thread ble_thread_runner;
+rtos::Thread radio_thread_runner;
 
 
 RF24 radio(CE_PIN, CSN_PIN);
@@ -46,16 +46,26 @@ uint8_t address[][6] = { "BOAT", "LAND" };
 
 
 
+/**
+ * @brief Set the up ble object
+ * 
+ * @note: This function has been tested on the Arduino Nano 33 BLE ONLY
+ * 
+ * @return int (OK or BLE_INIT_FAIL)
+ */
+int setup_ble() {
 
-int setup_comms() {
-
-    
+    //Begin the BLE object
     if (!BLE.begin()) {
         Serial.println("starting BLE failed!");
         return BLE_INIT_FAIL;
     }
 
+  #ifdef DEBUG
     Serial.println("BLE started");
+  #endif
+
+    //Set BLE params and services
     BLE.setLocalName("SpookyDuckBoat");
     BLE.setAdvertisedService(boatService);
     boatService.addCharacteristic(boatCharacteristic);
@@ -66,21 +76,25 @@ int setup_comms() {
     BLE.addService(boatService);
     boatCharacteristic.setValue(0);
     BLE.advertise();
-    Serial.println("Bluetooth device active, waiting for connections...");
 
-    //start nrf thread
-    //nrfThread.start(&nrf_thread);
+  #ifdef DEBUG
+    Serial.println("Bluetooth device active, waiting for connections...");
+  #endif
 
     //set up ble thread
-    ble_thread.start(&comms_thread_worker);
+    ble_thread_runner.start(ble_thread);
 
     return OK;
 }
 
-
-void comms_thread_worker(){
+/**
+ * @brief The BLE thread
+ * 
+ */
+void ble_thread(){
 
     while(1){
+        //Poll the BLE object for new data
         BLE.poll();
 
         //write gps data to the BLE characteristics
@@ -89,11 +103,18 @@ void comms_thread_worker(){
         boatGPSHead.writeValue(gpsData.headingDeg); //Int
         boatGPSSpeed.writeValue(gpsData.speed); //Float
 
+        //TODO: Add a "hasFix" characteristic to the BLE service
+
+        //TODO: Make it so the boat updates this data exactly every second
         delay(1000);
     }
 }
 
-
+/**
+ * @brief Set the up radio object
+ * 
+ * @return int (OK or RADIO_INIT_FAIL)
+ */
 int setup_radio(){
     if(!radio.begin()){
         Serial.println("Radio setup failed");
@@ -113,12 +134,16 @@ int setup_radio(){
     
     //radio.startListening(); // RX only
 
-    comms_thread.start(radio_thread);
+    radio_thread_runner.start(radio_thread);
 
     return OK;
 
 }
 
+/**
+ * @brief The radio thread
+ * 
+ */
 void radio_thread(){
   Serial.println("Radio thread started");
     while(1){
