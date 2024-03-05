@@ -14,5 +14,7 @@
 
 #include "gps.h"
 #include "comms.h"
+#include <RF24.h>
+#include "errorno.h" 
 
 #endif // BOAT_H

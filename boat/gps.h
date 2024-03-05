@@ -15,6 +15,7 @@
 #include <Wire.h>
 #include <SparkFun_u-blox_GNSS_Arduino_Library.h> //http://librarymanager/All#SparkFun_u-blox_GNSS
 #include <mbed/mbed.h>
+#include "errorno.h" 
 
 struct gps_data {
     double lat;

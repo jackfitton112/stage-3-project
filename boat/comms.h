@@ -17,16 +17,29 @@
 #include <mbed/mbed.h>
 #include <RF24.h>
 #include "gps.h"
+#include "errorno.h" 
 
+enum CommsMode {
+    RX,
+    TX
+};
+
+/*
+struct txpayload {
+    double lat;
+    double lon;
+    int headingDeg;
+    int timestamp;
+};
+*/
 
 #define CE_PIN 7
 #define CSN_PIN 8
 
 
-void setupComms();
+int setup_comms();
 void comms_thread_worker();
 void nrf_thread();
-void queue_worker();
 
 
 
