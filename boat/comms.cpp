@@ -12,10 +12,13 @@
 
 #include "comms.h"
 
+#define DEBUG
+
 /**
  * @brief BLE service for the boat
  * 
  */
+rtos::Thread ble_thread_runner;
 BLEService boatService("19B10000-E8F2-537E-4F6C-D104768A1214");
 BLEIntCharacteristic boatCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
 BLEDoubleCharacteristic boatGPSLat("19B10002-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
@@ -24,16 +27,20 @@ BLEIntCharacteristic boatGPSHead("19B10004-E8F2-537E-4F6C-D104768A1214", BLERead
 BLEFloatCharacteristic boatGPSSpeed("19B10005-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
 
 
-rtos::Thread ble_thread_runner;
-rtos::Thread radio_thread_runner;
 
+/**
+ * @brief Nrf24l01 radio object and config
+ * 
+ */
+rtos::Thread radio_thread_runner;
 
 RF24 radio(CE_PIN, CSN_PIN);
 
 bool role;
-
 // Set the radio number, as this device is on the boat it will be static and set to 0
 bool radioNumber = 0;
+
+bool outOfRange = false;
 
 // Initialize a copy of the struct to hold the data
 txpayload payload;
@@ -42,7 +49,10 @@ txpayload payload;
 uint8_t address[][6] = { "BOAT", "LAND" };
 
 
-
+//Radio Queue
+rtos::Thread radio_transmit_queue_runner;
+rtos::MemoryPool<txpayload, 16> mpool;
+rtos::Queue<txpayload, 16> radioQueue;
 
 
 
@@ -135,6 +145,7 @@ int setup_radio(){
     //radio.startListening(); // RX only
 
     radio_thread_runner.start(radio_thread);
+    radio_transmit_queue_runner.start(radio_transmit_queue);
 
     return OK;
 
@@ -146,41 +157,122 @@ int setup_radio(){
  */
 void radio_thread(){
   Serial.println("Radio thread started");
-    while(1){
-      if (role) {
-      // This device is a TX node
-
-      //write the gps data to the struct to be sent
-      payload.lat = gpsData.lat;
-      payload.lon = gpsData.lon;
-      payload.headingDeg = gpsData.headingDeg;
-      payload.timestamp = gpsData.unixTime;
-
-      bool report = radio.write(&payload, sizeof(txpayload)); // transmit & save the report
-
-      if (!report) {
-        Serial.println(F("Transmission failed or timed out"));
-      }
-
-    #ifdef DEBUG
-        Serial.println(F("Transmission successful"));
-    #endif
-    
-      delay(1000); // slow transmissions down by 1 second
-
-    } else {
-      // This device is a RX node
-
       uint8_t pipe;
-      if (radio.available(&pipe)) { // is there a payload? get the pipe number that received it
+    while(1){
+
+      //set up mpool space
+      txpayload *data = mpool.alloc();
+      data->lat = gpsData.lat;
+      data->lon = gpsData.lon;
+      data->headingDeg = gpsData.headingDeg;
+      data->timestamp = gpsData.unixTime;
+
+      //add the data to the queue
+      radioQueue.put(data);
+
+      //delay for 1000ms
+      rtos::ThisThread::sleep_for(1000);
+
+      
+      if (radio.available(&pipe) && role == RX) { // is there a payload? get the pipe number that received it
         radio.read(&payload, sizeof(txpayload)); // fetch payload from FIFO
         Serial.print(F("Received data on pipe "));
         Serial.print(pipe); // print the pipe number
         Serial.print(F(": "));
+        Serial.print(payload.lat);
+        Serial.print(F(", "));
+        Serial.print(payload.lon);
        //Payload will be different for receiver
 
       }
-    }
+
+    
   }
 }
 
+
+/**
+ * @brief The radio transmit queue
+ * @note Radio only goes into TX mode when there is data to send
+ */
+#include <cstdlib> // For random number generation. If not available, use an alternative method.
+
+void radio_transmit_queue() {
+  bool report;
+  bool emptyTheQueue = false;
+
+  while (1) {
+    // If there are items in the queue and we're not already set to empty it,
+    // check if we should start emptying the queue.
+    if (!radioQueue.empty() && !emptyTheQueue) {
+      if (radioQueue.count() > 10) {
+        emptyTheQueue = true; // Set to start emptying the queue.
+      } else {
+        // If there are not enough items, just wait a bit and check again.
+        rtos::ThisThread::sleep_for(1000); // Adjust the timing as needed.
+        continue;
+      }
+    }
+
+    while (!radioQueue.empty() && emptyTheQueue) {
+      osEvent evt = radioQueue.get();
+      if (evt.status == osEventMessage) {
+        txpayload* data = (txpayload*)evt.value.p;
+
+        int failCount = 0;
+        report = false;
+        while (!report && failCount <= 5) {
+          role = TX; // Switch to transmit mode
+          radio.stopListening();
+
+          #ifdef DEBUG
+          Serial.println(F("Transmitting data"));
+          Serial.print(data->lat);
+          Serial.print(",");
+          Serial.print(data->lon);
+          Serial.print(",");
+          Serial.print(data->headingDeg);
+          Serial.print(",");
+          Serial.println(data->timestamp);
+          #endif
+
+          report = radio.write(data, sizeof(txpayload));
+
+          if (!report) {
+            Serial.println(F("Transmission failed or timed out"));
+
+            // Switch to receive mode and wait for a random time between 1 to 3 seconds
+            role = RX;
+            radio.startListening();
+            unsigned int waitTime = 1000 + rand() % 2000; // Random wait between 1000ms to 3000ms
+            rtos::ThisThread::sleep_for(waitTime);
+            failCount++;
+          }
+
+          if (failCount > 5) {
+            Serial.println(F("Failed to transmit data after 5 attempts"));
+          }
+        }
+
+        // Switch to receive mode
+        role = RX;
+
+        // Free the memory used by the message
+        mpool.free(data);
+      }
+
+
+
+      // If the queue is empty, stop emptying it.
+      if (radioQueue.empty()) {
+        emptyTheQueue = false;
+      }
+
+      // Wait a bit before checking the queue again
+      rtos::ThisThread::sleep_for(1000); // Adjust the timing as needed.
+
+    } 
+
+  }
+
+}

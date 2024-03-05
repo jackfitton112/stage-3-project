@@ -54,6 +54,7 @@ int setup_ble();
 int setup_radio();
 void ble_thread();
 void radio_thread();
+void radio_transmit_queue();
 
 
 
