@@ -24,5 +24,8 @@
 #define BLE_ADVERTISE_FAIL 22
 #define BLE_SERVICE_ADD_FAIL 23
 
+//Radio error codes
+#define RADIO_INIT_FAIL 41
+
 
 #endif // ERRORNO_H

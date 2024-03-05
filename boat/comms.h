@@ -19,27 +19,42 @@
 #include "gps.h"
 #include "errorno.h" 
 
+#define CE_PIN 7
+#define CSN_PIN 8
+
+
+extern RF24 radio;
+
 enum CommsMode {
     RX,
     TX
 };
 
-/*
+extern bool role;
+// Set the radio number, as this device is on the boat it will be static and set to 0
+extern bool radioNumber;
+
+// Define the struct to hold the data
 struct txpayload {
     double lat;
     double lon;
     int headingDeg;
     int timestamp;
 };
-*/
 
-#define CE_PIN 7
-#define CSN_PIN 8
+// Initialize a copy of the struct to hold the data
+extern txpayload payload;
+
+// Set the radio to be a receiver
+extern uint8_t address[][6];
+
 
 
 int setup_comms();
 void comms_thread_worker();
 void nrf_thread();
+int setup_radio();
+void radio_thread();
 
 
 
