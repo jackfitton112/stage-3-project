@@ -14,19 +14,6 @@
 
 #define DEBUG
 
-/**
- * @brief BLE service for the boat
- * 
- */
-rtos::Thread ble_thread_runner;
-BLEService boatService("19B10000-E8F2-537E-4F6C-D104768A1214");
-BLEIntCharacteristic boatCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
-BLEDoubleCharacteristic boatGPSLat("19B10002-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
-BLEDoubleCharacteristic boatGPSLon("19B10003-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
-BLEIntCharacteristic boatGPSHead("19B10004-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
-BLEFloatCharacteristic boatGPSSpeed("19B10005-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
-
-
 
 /**
  * @brief Nrf24l01 radio object and config
@@ -57,65 +44,8 @@ rtos::Queue<txpayload, TX_QUEUE_SIZE> radioQueue;
 
 
 
-/**
- * @brief Set the up ble object
- * 
- * @note: This function has been tested on the Arduino Nano 33 BLE ONLY
- * 
- * @return int (OK or BLE_INIT_FAIL)
- */
-int setup_ble() {
 
-    //Begin the BLE object
-    if (!BLE.begin()) {
-        Serial.println("starting BLE failed!");
-        return BLE_INIT_FAIL;
-    }
 
-  #ifdef DEBUG
-    Serial.println("BLE started");
-  #endif
-
-    //Set BLE params and services
-    BLE.setLocalName("SpookyDuckBoat");
-    BLE.setAdvertisedService(boatService);
-    boatService.addCharacteristic(boatCharacteristic);
-    boatService.addCharacteristic(boatGPSLat);
-    boatService.addCharacteristic(boatGPSLon);
-    boatService.addCharacteristic(boatGPSHead);
-    boatService.addCharacteristic(boatGPSSpeed);
-    BLE.addService(boatService);
-    boatCharacteristic.setValue(0);
-    BLE.advertise();
-
-  #ifdef DEBUG
-    Serial.println("Bluetooth device active, waiting for connections...");
-  #endif
-
-    //set up ble thread
-    ble_thread_runner.start(ble_thread);
-
-    return OK;
-}
-
-/**
- * @brief The BLE thread
- * 
- */
-void ble_thread(){
-
-    while(1){
-        //Poll the BLE object for new data
-        BLE.poll();
-
-        //write gps data to the BLE characteristics
-        boatGPSLat.writeValue(gpsData.lat); //Double
-        boatGPSLon.writeValue(gpsData.lon); //Double
-        boatGPSHead.writeValue(gpsData.headingDeg); //Int
-        boatGPSSpeed.writeValue(gpsData.speed); //Float
-        delay(1000);
-    }
-}
 
 /**
  * @brief Set the up radio object

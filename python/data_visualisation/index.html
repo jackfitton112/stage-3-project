@@ -160,6 +160,14 @@
                     var newLatLng = new L.LatLng(lat, lon);
                     map.panTo(newLatLng);
 
+                    //remove previous marker
+                    /*
+                    map.eachLayer(function (layer) {
+                        if (layer instanceof L.Marker) {
+                            map.removeLayer(layer);
+                        }
+                    });*/
+
                     //put a pin on the map
                     var marker = L.marker([lat, lon]).addTo(map);
 

@@ -20,6 +20,7 @@
 void setup() {
     Serial.begin(115200); // Open serial port
 
+    //TODO: Remove this before final build as program will hang if no serial connection
     while(!Serial); // Wait for serial to open
 
     // Setup GPS
