@@ -13,6 +13,14 @@
 
 
 
+//Left Motor is on D2 (p1.11)
+Motor leftMotor(P1_11);
+
+//Right Motor is on D3
+Motor rightMotor(P1_12);
+
+
+
 /**
  * @brief Setup function for the boat
  * 
@@ -27,11 +35,6 @@ void setup() {
     if (setup_gps() != OK) {
         Serial.println(F("GPS setup failed"));
         while (1);
-    }
-
-    if(setup_ble() != OK){
-        Serial.println(F("Comms setup failed"));
-        while(1);
     }
 
     if(setup_radio() != OK){
