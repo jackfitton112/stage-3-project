@@ -1,0 +1,98 @@
+<mxfile host="Electron" modified="2024-04-27T21:24:33.005Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.0.4 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="nH5Kp1k6tKDKANdu4gNm" version="24.0.4" type="device">
+  <diagram name="Page-1" id="vR79zJs5wKiedbLew-9V">
+    <mxGraphModel dx="1195" dy="686" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bTqLb6bl3gWekbV8Kuk3-1" target="bTqLb6bl3gWekbV8Kuk3-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-1" value="ASV MCU&lt;div&gt;(Arduino Nano 33 BLE)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="280" width="160" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bTqLb6bl3gWekbV8Kuk3-2" target="bTqLb6bl3gWekbV8Kuk3-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-6" value="Telemtry" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="bTqLb6bl3gWekbV8Kuk3-4">
+          <mxGeometry x="-0.7279" y="3" relative="1" as="geometry">
+            <mxPoint x="13" y="3" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-2" value="GPS Module" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bTqLb6bl3gWekbV8Kuk3-3" target="bTqLb6bl3gWekbV8Kuk3-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-7" value="Sensor&lt;div&gt;readings&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="bTqLb6bl3gWekbV8Kuk3-5">
+          <mxGeometry x="-0.5178" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-3" value="Sensors" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="370" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-8" value="Radio&lt;div&gt;(nRF24L01&lt;/div&gt;&lt;div&gt;2.4GHz Radio)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="280" width="120" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-10" value="Radio&lt;div&gt;(nRF24L01&lt;/div&gt;&lt;div&gt;2.4GHz Radio)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="280" width="120" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-12" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="bTqLb6bl3gWekbV8Kuk3-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="360" as="sourcePoint" />
+            <mxPoint x="650" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-13" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="bTqLb6bl3gWekbV8Kuk3-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="640" y="360" as="sourcePoint" />
+            <mxPoint x="570" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-14" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="620" y="380" as="sourcePoint" />
+            <mxPoint x="670" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-15" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="580" y="380" as="sourcePoint" />
+            <mxPoint x="630" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-16" value="Upto 1Km" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="585" y="390" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bTqLb6bl3gWekbV8Kuk3-17" target="bTqLb6bl3gWekbV8Kuk3-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bTqLb6bl3gWekbV8Kuk3-17" target="bTqLb6bl3gWekbV8Kuk3-25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-17" value="Ground MCU&lt;div&gt;(Arduino Nano 33 BLE)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="280" width="160" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-19" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="bTqLb6bl3gWekbV8Kuk3-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="360" as="sourcePoint" />
+            <mxPoint x="450" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-20" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="800" y="359.71" as="sourcePoint" />
+            <mxPoint x="840" y="359.71" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-23" value="Control Unit" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="180" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bTqLb6bl3gWekbV8Kuk3-25" value="Data Logger&lt;div&gt;(CSV)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="180" width="160" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

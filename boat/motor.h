@@ -13,8 +13,11 @@
 #define MOTOR_H
 
 #include <Servo.h>
-#include <mbed/mbed.h>
+#include <mbed.h>
 #include <stdio.h>
+
+//Clamp the speed to 30% of the max speed
+#define CLAMP_SPEED
 
 
 /*
@@ -30,9 +33,6 @@ float mapFloat(float x, float in_min, float in_max, float out_min, float out_max
 #define SERVO_MAX 1880
 #define SERVO_NEUTRAL 1480
 
-#define KP 1
-#define KI 0
-#define KD 0 // not used
 
 class Motor
 {

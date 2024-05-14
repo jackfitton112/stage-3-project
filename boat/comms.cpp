@@ -276,9 +276,9 @@ void radio_transmit_data(){
         data->lon = gpsData.lon * 1000000;
         data->headingDeg = gpsData.headingDeg;
         data->timestamp = gpsData.unixTime;
-        data->pH = 0;
-        data->turbidity = 0;
-        data->temperature = 0;
+        data->pH = sensors.pH;
+        data->turbidity = sensors.turbidity;
+        data->temperature = sensors.temperature;
 
 
         //add the data to the queue
@@ -319,7 +319,15 @@ void radio_transmit_queue() {
                             Serial.print(",");
                             Serial.print(data->headingDeg);
                             Serial.print(",");
-                            Serial.println(data->timestamp);
+                            Serial.print(data->timestamp);
+                            Serial.print(",");
+                            Serial.print(data->pH);
+                            Serial.print(",");
+                            Serial.print(data->turbidity);
+                            Serial.print(",");
+                            Serial.println(data->temperature);
+
+
 
                             report = radio.write(data, sizeof(txpayload));
                             if (!report) {

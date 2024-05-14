@@ -48,6 +48,7 @@ int setup_gps() {
   //Start the gps thread
   gps_thread.start(&gps_thread_worker);
 
+    Serial.println("GPS setup complete");
 
   return OK;
 }
@@ -74,10 +75,10 @@ void gps_thread_worker(){
         byte fixType = GPSCHIP.getFixType();
         
         //if fixtype is less than 2D, do not store the data
-        if(fixType < 2){
+        /*if(fixType < 2){
             //Serial.println("No fix / Low quality fix - Not updating GPS data");
             continue;
-        }
+        }*/
 
 
         gpstimer.start();

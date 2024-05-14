@@ -15,8 +15,12 @@
 #include "gps.h"
 #include "comms.h"
 #include "motor.h"
+#include "sensors.h"
 #include <RF24.h>
 #include "errorno.h" 
-#include <mbed/mbed.h>
+#include <mbed.h>
+
+extern Motor leftMotor;
+extern Motor rightMotor;
 
 #endif // BOAT_H

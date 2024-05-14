@@ -29,9 +29,10 @@ void setup() {
     Serial.begin(115200); // Open serial port
 
     //TODO: Remove this before final build as program will hang if no serial connection
-    while(!Serial); // Wait for serial to open
+    //while(!Serial); // Wait for serial to open
 
     // Setup GPS
+    
     if (setup_gps() != OK) {
         Serial.println(F("GPS setup failed"));
         while (1);
@@ -41,6 +42,13 @@ void setup() {
         Serial.println(F("Radio setup failed"));
         while(1);
     }
+
+
+    if (setup_sensors() != OK) {
+        Serial.println(F("Sensor setup failed"));
+        while (1);
+    }
+
 
 
     //Only prints if debug is enabled

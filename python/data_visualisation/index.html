@@ -8,6 +8,7 @@
     <title>GPS Data Display</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         #map {
             width: 100%;
@@ -36,6 +37,15 @@
                         <ul class="navbar-nav flex-nowrap ms-auto"></ul>
                     </div>
                 </nav>
+                <!-- Toast-->
+                <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+                    <div class="toast-header">
+                        <strong class="me-auto">Success</strong><small>Just now</small><button class="btn-close" type="button" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">Waypoint added successfully</div>
+                </div>
+                <!-- End of Toast-->
+
                 <div class="container-fluid">
                     <div class="d-sm-flex justify-content-between align-items-center mb-4">
                         <h3 class="text-dark mb-0">Dashboard</h3><a class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button" href="#"><i class="fas fa-download fa-sm text-white-50"></i>&nbsp;Generate Report</a>
@@ -46,7 +56,7 @@
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col me-2">
-                                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>Location)</span></div>
+                                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>Location</span></div>
                                             <div class="text-dark fw-bold h5 mb-0"><span id="latlon">Waiting for data</span></div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-map fa-2x text-gray-300"></i></div>
@@ -98,17 +108,32 @@
                         <div class="col-lg-7 col-xl-8">
                             <div class="card shadow mb-4">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h6 class="text-primary fw-bold m-0">Some Data</h6>
+                                    <h6 class="text-primary fw-bold m-0">Sensor Data</h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
                                         <div class="dropdown-menu shadow dropdown-menu-end animated--fade-in">
-                                            <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item" href="#">&nbsp;Action</a><a class="dropdown-item" href="#">&nbsp;Another action</a>
-                                            <div class="dropdown-divider"></div><a class="dropdown-item" href="#">&nbsp;Something else here</a>
+                                            <p class="text-center dropdown-header">SELECT A GRAPH:</p>
+                                            <a class="dropdown-item" onclick="switchVisibility(1)">Temprature</a>
+                                            <a class="dropdown-item" onclick="switchVisibility(2)">Turbidity</a>
+                                            <a class="dropdown-item" onclick="switchVisibility(3)">pH</a>
+                                            <div class="dropdown-divider">
+
+                                            </div>
+                                            <a class="dropdown-item" href="#">&nbsp;Something else here</a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="chart-area"><canvas data-bss-chart="{&quot;type&quot;:&quot;line&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Jan&quot;,&quot;Feb&quot;,&quot;Mar&quot;,&quot;Apr&quot;,&quot;May&quot;,&quot;Jun&quot;,&quot;Jul&quot;,&quot;Aug&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;Earnings&quot;,&quot;fill&quot;:true,&quot;data&quot;:[&quot;0&quot;,&quot;10000&quot;,&quot;5000&quot;,&quot;15000&quot;,&quot;10000&quot;,&quot;20000&quot;,&quot;15000&quot;,&quot;25000&quot;],&quot;backgroundColor&quot;:&quot;rgba(78, 115, 223, 0.05)&quot;,&quot;borderColor&quot;:&quot;rgba(78, 115, 223, 1)&quot;}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;scales&quot;:{&quot;xAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;],&quot;drawOnChartArea&quot;:false},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}],&quot;yAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;]},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}]}}}"></canvas></div>
-                                </div>
+                                    <div class="">
+                                        <canvas id="temperatureChart"></canvas>
+                                    </div>
+                                    <div class="">
+                                        <canvas id="turbidityChart"></canvas>
+                                    </div>
+                                    <div class="">
+                                        <canvas id="pHChart"></canvas>
+                                    </div>
+
+                            </div>                                    
                             </div>
                         </div>
                         <div class="col-lg-5 col-xl-4">
@@ -123,8 +148,63 @@
                                     </div>
                                 </div>
                                 <div class="card-body" id="map"></div>
+                                <!--Controls section, add waypoint, lower winch-->
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <!-- creates a modal and asks you to input lat and lon-->
+                                            <button class="btn btn-primary w-100" type="button" data-bs-toggle="modal" data-bs-target="#addWaypoint">Add Waypoint</button>
+                                            <div class="modal fade" id="addWaypoint" tabindex="-1" aria-labelledby="addWaypointLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="addWaypointLabel">Add waypoint</h5><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body" id="addWaypointBody">
+                                                            <form>
+                                                                <div class="mb-3"><label for="modallat" class="form-label">Latitude</label><input class="form-control" type="text" id="lat"></div>
+                                                                <div class="mb-3"><label for="modallon" class="form-label">Longitude</label><input class="form-control" type="text" id="lon"></div>
+                                                            </form>
+                                                        </div>
+                                                        <div class="modal-footer"><button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+
+
+                                                            <button class="btn btn-primary" type="button" onclick="addWaypoint()" data-bs-dismiss="modal">Add Waypoint</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                        <div class="col-md-6">
+                                            <button class="btn btn-primary w-100" type="button" data-bs-toggle="modal" data-bs-target="#winchHeight">Set Winch Height</button>
+                                            <!--Opens a model where it displays the current winch height aswell as the limits-->
+                                            <div class="modal fade" id="winchHeight" tabindex="-1" aria-labelledby="winchHeightLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="winchHeightLabel">Set Winch Height</h5><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body" id="winchHeightBody">
+                                                            <p>Current Winch Height: <span id="winchcurrent">0</span>m</p>
+                                                            <p>Max Winch Height: 3m</p>
+                                                            <p>Min Winch Height: 0m</p>
+                                                            <form>
+                                                                <div class="mb-3"><label for="modalwinch" class="form-label">Winch Height</label><input class="form-control" type="text" id="winch"></div>
+                                                            </form>
+                                                            <button class="btn btn-primary" type="button" onclick="winchset()" data-bs-dismiss="modal">Set Winch Height</button>
+                                                        </div>
+                                                        <div class="modal-footer"><button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button></div>
+                                                        </div> 
+                                                    </div>
+                                                    </div>
+                                                    
+                                        </div>
+                                    </div>
                             </div>
                         </div>
+
+                        
                     </div>
                 </div>
             </div>
@@ -141,48 +221,244 @@
     <script src="assets/js/theme.js"></script>
     <script>
         var map = L.map('map').setView([53.948451, -1.043967], 13);
+        let oldTemp = 0;
+        let oldTurb = 0;
+        let oldPH = 0;
+
+        let oldLat = 0;
+        let oldLon = 0;
+
+        var latlons = []
+
+        var winchcurrent = 0;
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        function fetchData() {
-            fetch('http://localhost:8000/telemetry')
+        var tempData = {
+            labels: [],
+            datasets: [{ label: 'Temperature (°C)', data: [], backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 1 }]
+        };
+
+        var turbData = {
+            labels: [],
+            datasets: [{ label: 'Turbidity (NTU)', data: [], backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 }]
+        };
+
+        var pHData = {
+            labels: [],
+            datasets: [{ label: 'pH Level', data: [], backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 1 }]
+        };
+
+        var tempChart = new Chart(document.getElementById('temperatureChart'), {
+            type: 'line',
+            data: tempData,
+            options: { scales: { y: { beginAtZero: true } } }
+        });
+
+        var turbChart = new Chart(document.getElementById('turbidityChart'), {
+            type: 'line',
+            data: turbData,
+            options: { scales: { y: { beginAtZero: true } } }
+        });
+
+        var pHChart = new Chart(document.getElementById('pHChart'), {
+            type: 'line',
+            data: pHData,
+            options: { scales: { y: { beginAtZero: true } } }
+        });
+
+        document.getElementById('turbidityChart').style.display = 'none';
+        document.getElementById('pHChart').style.display = 'none';
+
+        //set default chart values to 0
+        tempData.labels.push('0');
+        tempData.datasets[0].data.push(0);
+        tempChart.update();
+
+        turbData.labels.push('0');
+        turbData.datasets[0].data.push(0);
+        turbChart.update();
+
+        pHData.labels.push('0');
+        pHData.datasets[0].data.push(0);
+        pHChart.update();
+
+        const LAKE_CENTRE = [53.946165,-1.0306309]
+        map.setView(LAKE_CENTRE, 15);
+
+        var redIcon = new L.Icon({
+            iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Red_circle.svg',
+            iconSize: [20, 20],
+        });
+
+
+        function addWaypoint(){
+            var lat = document.getElementById('lat').value;
+            var lon = document.getElementById('lon').value;
+            
+            //clear the input fields
+            document.getElementById('lat').value = '';
+            document.getElementById('lon').value = '';
+
+            console.log(lat, lon);
+
+            //localhost:8000/addwaypoint?lat=123&lon=123
+            fetch(`http://localhost:8000/addwaypoint?lat=${lat}&lon=${lon}`)
                 .then(response => response.json())
                 .then(data => {
-                    var lat = data.lat;
-                    var lon = data.lon;
-                    var heading = data.heading;
-                    var speed = data.speed;
-
-                    // Update the map view and marker position
-                    var newLatLng = new L.LatLng(lat, lon);
-                    map.panTo(newLatLng);
-
-                    //remove previous marker
-                    /*
-                    map.eachLayer(function (layer) {
-                        if (layer instanceof L.Marker) {
-                            map.removeLayer(layer);
-                        }
-                    });*/
-
-                    //put a pin on the map
-                    var marker = L.marker([lat, lon]).addTo(map);
-
-                    //zoom the map to the marker
-                    map.setView([lat, lon], 18);
-                    
-                    // Update telemetry data display
-                    document.getElementById('latlon').textContent = `${lat},${lon}`;
-                    document.getElementById('speed').textContent = `${speed} m/s`;
-                    document.getElementById('heading').textContent = `${heading}°`;
+                    if (data.success) {
+                        var toast = new bootstrap.Toast(document.querySelector('.toast'));
+                        toast.show();
+                    }
                 })
-                .catch(error => console.error('Error fetching data:', error));
+                .catch(error => console.error('Error adding waypoint:', error));
+
         }
+
+
+        function winchset(){
+            var winch = document.getElementById('winch').value;
+            document.getElementById('winch').value = '';
+            document.getElementById('winchcurrent').textContent = winch;
+            console.log(winch);
+
+            fetch(`http://localhost:8000/winchset?winch=${winch}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        var toast = new bootstrap.Toast(document.querySelector('.toast'));
+                        toast.show();
+                    }
+                })
+                .catch(error => console.error('Error setting winch height:', error));
+        }
+        
+
+
+        //function to swap between charts
+        //buttons will be pressed where 1 is temp, 2 is turbidity and 3 is pH
+        function switchVisibility(chartNum){
+            if (chartNum == 1){
+                document.getElementById('temperatureChart').style.display = 'block';
+                document.getElementById('turbidityChart').style.display = 'none';
+                document.getElementById('pHChart').style.display = 'none';
+            }
+            else if (chartNum == 2){
+                document.getElementById('temperatureChart').style.display = 'none';
+                document.getElementById('turbidityChart').style.display = 'block';
+                document.getElementById('pHChart').style.display = 'none';
+            }
+            else if (chartNum == 3){
+                document.getElementById('temperatureChart').style.display = 'none';
+                document.getElementById('turbidityChart').style.display = 'none';
+                document.getElementById('pHChart').style.display = 'block';
+            }
+        }
+
+
+        function fetchData() {
+        fetch('http://localhost:8000/telemetry')
+            .then(response => response.json())
+            .then(data => {
+                var lat = data.lat;
+                var lon = data.lon;
+                var heading = data.heading;
+                var speed = data.speed;
+                var temp = data.temperature;
+                var turb = data.turbidity;
+                var ph = data.pH;
+                var timestamp = new Date(data.timestamp * 1000); // Convert Unix timestamp to JS Date object
+
+                // Update the map and other data points
+
+                console.log(lat, lon, heading, speed, temp, turb, ph, timestamp);
+
+                if (lat == 0 || lon == 0){
+                    if (oldLat == 0 || oldLon == 0){
+                        var marker = L.marker([53.946165,-1.0306309]).addTo(map);
+                        document.getElementById('latlon').textContent = `Waiting for GPS data`;
+                        oldLat = -1;
+                        oldLon = -1;
+                        //console.log("Waiting for GPS data");
+                    }
+                    else{
+                        var marker = L.marker([oldLat, oldLon]).addTo(map);
+                        document.getElementById('latlon').textContent = `${oldLat}, ${oldLon}`;
+                        //console.log("No GPS data");
+                    }
+                }
+                else{
+                    var marker = L.marker([lat, lon]).addTo(map);
+                    document.getElementById('latlon').textContent = `${oldLat}, ${oldLon}`;
+                    latlons.push([lat, lon]);
+                    oldLat = lat;
+                    oldLon = lon;
+                    //console.log("GPS data found");
+                }
+                //#var marker = L.marker([lat, lon]).addTo(map);
+                
+                
+                document.getElementById('speed').textContent = `${speed} m/s`;
+                document.getElementById('heading').textContent = `${heading}°`;
+                document.getElementById("speed").textContent = `${speed} m/s`;
+
+                var polyline = L.polyline(latlons, {color: 'blue'}).addTo(map);
+
+                // Add data to charts and update
+                if (temp !== oldTemp) {
+                    tempData.labels.push(timestamp.toLocaleTimeString());
+                    tempData.datasets[0].data.push(temp);
+                    tempChart.update();
+                    oldTemp = temp;
+                }
+
+                if (turb !== oldTurb) {
+                    turbData.labels.push(timestamp.toLocaleTimeString());
+                    turbData.datasets[0].data.push(turb);
+                    turbChart.update();
+                    oldTurb = turb;
+                }
+
+                if (ph !== oldPH) {
+                    pHData.labels.push(timestamp.toLocaleTimeString());
+                    pHData.datasets[0].data.push(ph);
+                    pHChart.update();
+                    oldPH = ph;
+                }
+            })
+
+        .catch(error => console.error('Error fetching data:', error));
+        
+
+        fetch('http://localhost:8000/waypoints')
+            //a list of lat and lon pairs
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                for (var i = 0; i < data.length; i++){
+                    //make the markers red
+                    var marker = L.marker([data[i][0], data[i][1]], {icon: redIcon}).addTo(map);
+                }
+
+                //draw a polyline between the waypoints
+                var polyline = L.polyline(data, {color: 'red'}).addTo(map);
+                
+                if (data.length > 0){
+                    document.getElementById('waypoint').textContent = `${data[0][0]}, ${data[0][1]}`;
+                }
+                else{
+                    document.getElementById('waypoint').textContent = `None`;
+                }
+            })
+
+        }
+
+
         fetchData();
-        setInterval(fetchData, 5000); // Fetch data every 5 seconds
+        setInterval(fetchData, 500); // Fetch data every 5 seconds
     </script>
 </body>
 

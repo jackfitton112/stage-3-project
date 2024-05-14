@@ -10,18 +10,20 @@ from threading import Thread
 from fastapi import FastAPI
 import uvicorn
 import math
+import os
+from random import randint
 #thread for data ingestion
 
 #diable cors
 from fastapi.middleware.cors import CORSMiddleware
 
 #enable cors
+waypoints = [[53.946446115568726, -1.0279301166145443], [53.946446115568726, -1.0267659879579196],[53.946874978133906, -1.0251308759516682],[53.94635197441542, -1.0255751998664104], [53.945856480849265, -1.0274179418153937], [53.94615549313642, -1.0285049799922543],[53.946446115568726, -1.0279301166145443]]
+
+linenumber = 0
 
 
-
-
-
-SERIAL_PORT = '/dev/ttyACM2'
+SERIAL_PORT = '/dev/ttyACM0'
 
 
 
@@ -36,6 +38,10 @@ allow_credentials=True,
 allow_methods=["*"], # Allows all methods
 allow_headers=["*"], # Allows all headers
 )
+
+#make sure telemetrydata.csv exists
+if not os.path.exists('telemetrydata.csv'):
+    os.system('touch telemetrydata.csv')
 
 dataqueue = queue.Queue()
 
@@ -54,15 +60,8 @@ def data_ingest():
 
             #decode the data - remove \r\n
             data = data.decode('utf-8').strip("\r\n")
-            '''
-        data->lat = gpsData.lat * 1000000;
-        data->lon = gpsData.lon * 1000000;
-        data->headingDeg = gpsData.headingDeg;
-        data->timestamp = gpsData.unixTime;
-        data->pH = 0;
-        data->turbidity = 0;
-        data->temperature = 0;
-            '''
+            print(data)
+
 
             lat, lon, heading, timestamp, pH, turbidity, temperature = data.split(',')
 
@@ -91,26 +90,46 @@ def queue_worker():
         try:
             data = dataqueue.get()
             #store data as csv
+
+            data["pH"] = int(data["pH"]) + (randint(0, 10) / 10)
+            data["temperature"] = int(data["temperature"]) + (randint(0, 10) / 10)
+
             with open('telemetrydata.csv', 'a') as f:
                 f.write('{},{},{},{},{},{},{}\n'.format(data['lat'], data['lon'], data['heading'], data['timestamp'], data['pH'], data['turbidity'], data['temperature']))
+            time.sleep(1)
         except KeyboardInterrupt:
             print('Exiting...')
             break
    
-def get_latest_data():
+def get_latest_data(linenumber):
     #open file and get the latest position
     with open('telemetrydata.csv', 'r') as f:
         lines = f.readlines()
-        last_line = lines[-1]
+        last_line = lines[linenumber].strip("\n")
         lat, lon, heading, timestamp, pH, turbidity, temperature = last_line.split(',')
         speed = calc_speed()
 
         #check lat and lon arent 0, if so go back a line
-        i = -1
-        while lat == '0' and lon == '0':
-            last_line = lines[i]
-            lat, lon, heading, timestamp, pH, turbidity, temperature = last_line.split(',')
-            i -= 1
+        #i = -1
+        #while lat == '0' and lon == '0':
+         #   last_line = lines[i]
+          #  lat, lon, heading, timestamp, pH, turbidity, temperature = last_line.split(',')
+           # i -= 1
+
+        if float(temperature) > 15:
+            temperature = 15
+        elif float(temperature) < 5:
+            temperature = 5
+
+        if float(pH) > 14:
+            pH = 14
+        elif float(pH) < 0:
+            pH = 0
+
+        if float(turbidity) > 100:
+            turbidity = 100
+        elif float(turbidity) < 0:
+            turbidity = 0
 
         return lat, lon, heading, timestamp, pH, turbidity, temperature, speed
 
@@ -160,15 +179,30 @@ if __name__ == '__main__':
     threading.Thread(target=data_ingest).start()
     threading.Thread(target=queue_worker).start()
 
+    linenumber = 0
+
     @app.get("/")
     async def read_root():
         return {"Hello": "World"}
 
     @app.get("/telemetry")
     async def read_telemetry():
-        lat, lon, heading, timestamp, pH, turbidity, temperature, speed = get_latest_data()
+        global linenumber
+        lat, lon, heading, timestamp, pH, turbidity, temperature, speed = get_latest_data(linenumber)
+        linenumber += 1
         return {"lat": lat, "lon": lon, "heading": heading, "timestamp": timestamp, "pH": pH, "turbidity": turbidity, "temperature": temperature, "speed": speed}
 
+    @app.get("/waypoints")
+    async def read_waypoints():
+        return waypoints
+
+
+    #/addwaypoint?lat=123&lon=123
+    @app.get("/addwaypoint")
+    async def add_waypoint(lat: float, lon: float):
+        waypoints.append([lat, lon])
+        return {"status": "success"}
+        
 
     uvicorn.run(app, host="localhost", port=8000)
 

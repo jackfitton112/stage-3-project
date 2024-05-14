@@ -58,7 +58,7 @@ int failcount = 0;  // Moved outside of the loop to maintain state
  */
 void setup() {
     Serial.begin(115200);
-    while (!Serial) {}
+    //while (!Serial) {}
 
     if (!radio.begin()) {
         Serial.println(F("radio hardware is not responding!!"));

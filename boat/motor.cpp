@@ -31,14 +31,28 @@ Motor::Motor(mbed::PwmOut pin) : _pin(pin)
 /**
  * @brief Construct a new Motor::set Speed object
  * 
- * @param speed - value between -100 and 100 where 0 is stopped and 100 is full speed forward and -100 is full speed reverse
+ * @param speed - value between -1 and 1 where 0 is stopped and 100 is full speed forward and -100 is full speed reverse
  *
  
  */
 void Motor::setSpeed(int speed)
 {
     // map the speed to the servo values
-    float mappedSpeed = mapFloat(speed, -100, 100, SERVO_MIN, SERVO_MAX);
+    float mappedSpeed = mapFloat(speed, -1, 1, SERVO_MIN, SERVO_MAX);
+
+    #ifdef CLAMP_SPEED
+    // clamp the speed to the 30% of the max speed
+    if (mappedSpeed > SERVO_NEUTRAL + SERVO_MAX * 0.3)
+    {
+        mappedSpeed = SERVO_NEUTRAL + SERVO_MAX * 0.3;
+    }
+    else if (mappedSpeed < SERVO_NEUTRAL - SERVO_MAX * 0.3)
+    {
+        mappedSpeed = SERVO_NEUTRAL - SERVO_MAX * 0.3;
+    }
+    #endif
+
+
     _servo.writeMicroseconds(mappedSpeed);
     _speed = speed;
 

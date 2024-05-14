@@ -14,9 +14,10 @@
 
 
 #include <ArduinoBLE.h>
-#include <mbed/mbed.h>
+#include <mbed.h>
 #include <RF24.h>
 #include <cstdlib> 
+#include "sensors.h"
 
 #include "gps.h"
 #include "errorno.h" 
