@@ -103,7 +103,7 @@ def queue_worker():
    
 def get_latest_data(linenumber):
     #open file and get the latest position
-    with open('telemetrydata.csv', 'r') as f:
+    with open('demorundata.csv', 'r') as f:
         lines = f.readlines()
         last_line = lines[linenumber].strip("\n")
         lat, lon, heading, timestamp, pH, turbidity, temperature = last_line.split(',')

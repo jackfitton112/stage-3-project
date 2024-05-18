@@ -17,6 +17,12 @@ rtos::Thread temp;
 rtos::Thread ph;
 rtos::Thread turb;
 
+//define analog pins for sensors
+#define PH_PIN A0
+#define TURBIDITY_PIN A1
+#define TEMPERATURE_PIN A2
+
+
 
 
 /**
@@ -25,6 +31,9 @@ rtos::Thread turb;
  */
 int setup_sensors() {
     // Setup sensors here
+    mbed::AnalogIn tempSensor(TEMPERATURE_PIN);
+    mbed::AnalogIn phSensor(PH_PIN);
+    mbed::AnalogIn turbiditySensor(TURBIDITY_PIN);
 
     temp.start(temperature);
     ph.start(pH);
@@ -34,45 +43,25 @@ int setup_sensors() {
 
 void temperature() {
     while(1){
-        // Test function, pick a random temprature between 10 and 12c
-        //if the temp is already set, change it by +/- 0.3c (randomly)
-        if (sensors.temperature != 0) {
-            sensors.temperature += (rand() % 2) ? 3 : -3;
-        } else {
-            sensors.temperature = 10 + (rand() % 2);
-        }
-
-        //if the temperature is greater than 12, set it to 12
-        if (sensors.temperature > 12) {
-            sensors.temperature = 12;
-        }
-
-        //if the temperature is less than 10, set it to 10
-        if (sensors.temperature < 10) {
-            sensors.temperature = 10;
-        }
-
+        //READ TEMPERATURE SENSOR pin A2
+        //convert the value to a temperature value
+        sensors.temperature = tempSensor.read() * 100;
         //print the temperature value
         //Serial.print("Temperature: ");
         //Serial.println(sensors.temperature);
-
-        rtos::ThisThread::sleep_for(1000);
-
-    }
+        
 
 }
 
 void pH() {
 
     while(1){
-        // Test function, pick a random pH between 7 and 8.5
-        //if the pH is already set, change it by +/- 0.1 (randomly)
 
-        sensors.pH = (rand() % 2) ? 7 : 8;
   
+        //READ PH SENSOR pin A0
+        //convert the value to a pH value
+        sensors.pH = phSensor.read() * 14;
 
-
-        
         //print the pH value
         //Serial.print("pH: ");
         //Serial.println(sensors.pH);
@@ -83,18 +72,10 @@ void pH() {
 
 void turbidity() {
     while(1){
-        // Test function, pick a random turbidity between 40 and 60%
-        //if the turbidity is already set, change it by +/- 5% (randomly)
-        if (sensors.turbidity != 0) {
-            sensors.turbidity += (rand() % 2) ? 2 : -2;
-        } else {
-        sensors.turbidity = 40 + (rand() % 20);
-        }
-
-        //if the turbidity is greater than 60, set it to 60
-        if (sensors.turbidity > 61) {
-            sensors.turbidity = 61;
-        }
+        //READ TURBIDITY SENSOR pin A1
+        //convert the value to a turbidity value
+        sensors.turbidity = turbiditySensor.read() * 100;
+        
 
         //print the turbidity value
         //Serial.print("Turbidity: ");

@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.6.0/Control.FullScreen.min.js"></script>
+    
     <style>
         #map {
             width: 100%;
@@ -221,91 +224,92 @@
     <script src="assets/js/theme.js"></script>
     <script>
         var map = L.map('map').setView([53.948451, -1.043967], 13);
+        //map.addControl(new L.Control.Fullscreen());
+    
         let oldTemp = 0;
         let oldTurb = 0;
         let oldPH = 0;
-
+    
         let oldLat = 0;
         let oldLon = 0;
-
+    
         var latlons = []
-
+    
         var winchcurrent = 0;
-
+    
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
-
+    
         var tempData = {
             labels: [],
             datasets: [{ label: 'Temperature (°C)', data: [], backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 1 }]
         };
-
+    
         var turbData = {
             labels: [],
             datasets: [{ label: 'Turbidity (NTU)', data: [], backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 }]
         };
-
+    
         var pHData = {
             labels: [],
             datasets: [{ label: 'pH Level', data: [], backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 1 }]
         };
-
+    
         var tempChart = new Chart(document.getElementById('temperatureChart'), {
             type: 'line',
             data: tempData,
             options: { scales: { y: { beginAtZero: true } } }
         });
-
+    
         var turbChart = new Chart(document.getElementById('turbidityChart'), {
             type: 'line',
             data: turbData,
             options: { scales: { y: { beginAtZero: true } } }
         });
-
+    
         var pHChart = new Chart(document.getElementById('pHChart'), {
             type: 'line',
             data: pHData,
             options: { scales: { y: { beginAtZero: true } } }
         });
-
+    
         document.getElementById('turbidityChart').style.display = 'none';
         document.getElementById('pHChart').style.display = 'none';
-
-        //set default chart values to 0
+    
+        // Set default chart values to 0
         tempData.labels.push('0');
         tempData.datasets[0].data.push(0);
         tempChart.update();
-
+    
         turbData.labels.push('0');
         turbData.datasets[0].data.push(0);
         turbChart.update();
-
+    
         pHData.labels.push('0');
         pHData.datasets[0].data.push(0);
         pHChart.update();
-
-        const LAKE_CENTRE = [53.946165,-1.0306309]
+    
+        const LAKE_CENTRE = [53.946165, -1.0306309]
         map.setView(LAKE_CENTRE, 15);
-
+    
         var redIcon = new L.Icon({
             iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Red_circle.svg',
             iconSize: [20, 20],
         });
-
-
-        function addWaypoint(){
+    
+        function addWaypoint() {
             var lat = document.getElementById('lat').value;
             var lon = document.getElementById('lon').value;
-            
-            //clear the input fields
+    
+            // Clear the input fields
             document.getElementById('lat').value = '';
             document.getElementById('lon').value = '';
-
+    
             console.log(lat, lon);
-
-            //localhost:8000/addwaypoint?lat=123&lon=123
+    
+            // Send request to add waypoint
             fetch(`http://localhost:8000/addwaypoint?lat=${lat}&lon=${lon}`)
                 .then(response => response.json())
                 .then(data => {
@@ -315,16 +319,14 @@
                     }
                 })
                 .catch(error => console.error('Error adding waypoint:', error));
-
         }
-
-
-        function winchset(){
+    
+        function winchset() {
             var winch = document.getElementById('winch').value;
             document.getElementById('winch').value = '';
             document.getElementById('winchcurrent').textContent = winch;
             console.log(winch);
-
+    
             fetch(`http://localhost:8000/winchset?winch=${winch}`)
                 .then(response => response.json())
                 .then(data => {
@@ -335,131 +337,102 @@
                 })
                 .catch(error => console.error('Error setting winch height:', error));
         }
-        
-
-
-        //function to swap between charts
-        //buttons will be pressed where 1 is temp, 2 is turbidity and 3 is pH
-        function switchVisibility(chartNum){
-            if (chartNum == 1){
+    
+        // Function to swap between charts
+        // Buttons will be pressed where 1 is temp, 2 is turbidity, and 3 is pH
+        function switchVisibility(chartNum) {
+            if (chartNum == 1) {
                 document.getElementById('temperatureChart').style.display = 'block';
                 document.getElementById('turbidityChart').style.display = 'none';
                 document.getElementById('pHChart').style.display = 'none';
-            }
-            else if (chartNum == 2){
+            } else if (chartNum == 2) {
                 document.getElementById('temperatureChart').style.display = 'none';
                 document.getElementById('turbidityChart').style.display = 'block';
                 document.getElementById('pHChart').style.display = 'none';
-            }
-            else if (chartNum == 3){
+            } else if (chartNum == 3) {
                 document.getElementById('temperatureChart').style.display = 'none';
                 document.getElementById('turbidityChart').style.display = 'none';
                 document.getElementById('pHChart').style.display = 'block';
             }
         }
-
-
+    
         function fetchData() {
-        fetch('http://localhost:8000/telemetry')
-            .then(response => response.json())
-            .then(data => {
-                var lat = data.lat;
-                var lon = data.lon;
-                var heading = data.heading;
-                var speed = data.speed;
-                var temp = data.temperature;
-                var turb = data.turbidity;
-                var ph = data.pH;
-                var timestamp = new Date(data.timestamp * 1000); // Convert Unix timestamp to JS Date object
-
-                // Update the map and other data points
-
-                console.log(lat, lon, heading, speed, temp, turb, ph, timestamp);
-
-                if (lat == 0 || lon == 0){
-                    if (oldLat == 0 || oldLon == 0){
-                        var marker = L.marker([53.946165,-1.0306309]).addTo(map);
-                        document.getElementById('latlon').textContent = `Waiting for GPS data`;
-                        oldLat = -1;
-                        oldLon = -1;
-                        //console.log("Waiting for GPS data");
-                    }
-                    else{
-                        var marker = L.marker([oldLat, oldLon]).addTo(map);
-                        document.getElementById('latlon').textContent = `${oldLat}, ${oldLon}`;
-                        //console.log("No GPS data");
-                    }
-                }
-                else{
-                    var marker = L.marker([lat, lon]).addTo(map);
-                    document.getElementById('latlon').textContent = `${oldLat}, ${oldLon}`;
+            fetch('http://localhost:8000/telemetry')
+                .then(response => response.json())
+                .then(data => {
+                    var lat = parseFloat(data.lat);
+                    var lon = parseFloat(data.lon);
+                    var heading = parseFloat(data.heading);
+                    var speed = parseFloat(data.speed);
+                    var temp = parseFloat(data.temperature);
+                    var turb = parseFloat(data.turbidity);
+                    var ph = parseFloat(data.pH);
+                    var timestamp = new Date(data.timestamp * 1000); // Convert Unix timestamp to JS Date object
+    
+                    // Add the new lat, lon to the array
                     latlons.push([lat, lon]);
-                    oldLat = lat;
-                    oldLon = lon;
-                    //console.log("GPS data found");
-                }
-                //#var marker = L.marker([lat, lon]).addTo(map);
-                
-                
-                document.getElementById('speed').textContent = `${speed} m/s`;
-                document.getElementById('heading').textContent = `${heading}°`;
-                document.getElementById("speed").textContent = `${speed} m/s`;
-
-                var polyline = L.polyline(latlons, {color: 'blue'}).addTo(map);
-
-                // Add data to charts and update
-                if (temp !== oldTemp) {
+    
+                    // Update the map and other data points
+                    console.log(lat, lon, heading, speed, temp, turb, ph, timestamp);
+    
+                    // Remove old marker if exists
+                    if (window.currentMarker) {
+                        map.removeLayer(window.currentMarker);
+                    }
+    
+                    // Add marker to the map
+                    window.currentMarker = L.marker([lat, lon]).addTo(map);
+                    document.getElementById('latlon').textContent = `${lat}, ${lon}`;
+    
+                    // Draw polyline
+                    if (latlons.length > 1) {
+                        var polyline = L.polyline(latlons, { color: 'blue' }).addTo(map);
+                    }
+    
+                    // Update speed and heading
+                    document.getElementById('speed').textContent = `${speed} m/s`;
+                    document.getElementById('heading').textContent = `${heading}°`;
+    
+                    // Add data to charts and update
                     tempData.labels.push(timestamp.toLocaleTimeString());
                     tempData.datasets[0].data.push(temp);
                     tempChart.update();
-                    oldTemp = temp;
-                }
-
-                if (turb !== oldTurb) {
+    
                     turbData.labels.push(timestamp.toLocaleTimeString());
                     turbData.datasets[0].data.push(turb);
                     turbChart.update();
-                    oldTurb = turb;
-                }
-
-                if (ph !== oldPH) {
+    
                     pHData.labels.push(timestamp.toLocaleTimeString());
                     pHData.datasets[0].data.push(ph);
                     pHChart.update();
-                    oldPH = ph;
-                }
-            })
-
-        .catch(error => console.error('Error fetching data:', error));
-        
-
-        fetch('http://localhost:8000/waypoints')
-            //a list of lat and lon pairs
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                for (var i = 0; i < data.length; i++){
-                    //make the markers red
-                    var marker = L.marker([data[i][0], data[i][1]], {icon: redIcon}).addTo(map);
-                }
-
-                //draw a polyline between the waypoints
-                var polyline = L.polyline(data, {color: 'red'}).addTo(map);
-                
-                if (data.length > 0){
-                    document.getElementById('waypoint').textContent = `${data[0][0]}, ${data[0][1]}`;
-                }
-                else{
-                    document.getElementById('waypoint').textContent = `None`;
-                }
-            })
-
+                })
+                .catch(error => console.error('Error fetching data:', error));
+    
+            fetch('http://localhost:8000/waypoints')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        // Make the markers red
+                        var marker = L.marker([data[i][0], data[i][1]], { icon: redIcon }).addTo(map);
+                    }
+    
+                    // Draw a polyline between the waypoints
+                    var polyline = L.polyline(data, { color: 'red' }).addTo(map);
+    
+                    if (data.length > 0) {
+                        document.getElementById('waypoint').textContent = `${data[0][0]}, ${data[0][1]}`;
+                    } else {
+                        document.getElementById('waypoint').textContent = `None`;
+                    }
+                })
+                .catch(error => console.error('Error fetching waypoints:', error));
         }
-
-
+    
         fetchData();
         setInterval(fetchData, 500); // Fetch data every 5 seconds
     </script>
+    
 </body>
 
 </html>

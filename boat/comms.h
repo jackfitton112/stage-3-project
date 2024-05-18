@@ -63,14 +63,16 @@ extern bool radioNumber;
 
 // Define the struct to hold the data
 struct txpayload {
-    int lat;           // 4 bytes, scaled integer representation of latitude
-    int lon;           // 4 bytes, scaled integer representation of longitude
+    int lat;           // 4 bytes, scaled integer representation of latitude (degrees * 10^6)
+    int lon;           // 4 bytes, scaled integer representation of longitude (degrees * 10^6)
     short headingDeg;  // 2 bytes
     int timestamp;     // 4 bytes
     short pH;          // 2 bytes
     short turbidity;   // 2 bytes
     short temperature; // 2 bytes
-}; // Total: 20 bytes
+    //checksum
+    short checksum;    // 2 bytes XOR of all other bytes
+}; // Total: 22 bytes
 
 
 struct rxpayload {
